@@ -67,7 +67,8 @@ graph TD
     class Monitor observability;
     class ACR registry;
     class Client control;
-    
+```
+
 Legend:
 - **Blue (control/workloads)** — AKS ingress + services handling HTTP traffic.
 - **Green (broker)** — Messaging backbones (Strimzi Kafka, Azure Event Hubs).
@@ -75,10 +76,20 @@ Legend:
 - **Solid arrows** — Primary request/publish/consume paths.
 - **Dashed arrows** — Optional or alternative flows (Kafka vs. Event Hub) and image pulls.
 - **Dotted arrows** — Telemetry exports (OTLP traces/metrics) heading to Azure Monitor.
+
+```
+Client
+    ↓ POST /orders
+orders-api (FastAPI)
+    ↓ publish
+Event Hub / Kafka
+    ↓ consume
+orders-worker (Python worker)
+    ↓
+Processing, metrics, logs
 ```
 
 ## 🎯 Skills Demonstrated
-1. AI-Assisted Development with GitHub Copilot
 * Code generation from PRDs
 * Scaffolding FastAPI apps
 * Creating Dockerfiles & Helm charts
