@@ -14,6 +14,44 @@ The demo consists of two microservices:
 
 ## Architecture
 
+graph TD
+    Client([Client / Load Generator]) -->|POST /orders| Ingress[Ingress Controller]
+    
+    subgraph Azure_Cloud [Azure Cloud]
+        ACR[Azure Container Registry]
+        Monitor[Azure Monitor / App Insights]
+        
+        subgraph AKS_Cluster [AKS Cluster]
+            Ingress --> API[orders-api Service]
+            
+            subgraph Pods
+                API_Pod[orders-api Pod]
+                Worker_Pod[orders-worker Pod]
+            end
+            
+            API --> API_Pod
+            
+            %% Dual Backend Representation
+            API_Pod -->|Publish Event| Broker{Message Broker}
+            
+            subgraph Messaging [Event Backbone]
+                Broker -.->|Option A| Kafka[Strimzi Kafka]
+                Broker -.->|Option B| EH[Azure Event Hubs]
+            end
+            
+            Kafka -->|Consume| Worker_Pod
+            EH -->|Consume| Worker_Pod
+        end
+    end
+
+    %% CI/CD Link
+    ACR -.->|Pull Image| API_Pod
+    ACR -.->|Pull Image| Worker_Pod
+    
+    %% Observability Links
+    API_Pod -.->|OTLP Traces/Metrics| Monitor
+    Worker_Pod -.->|OTLP Traces/Metrics| Monitor
+    
 ```
 Client
    ↓ POST /orders
