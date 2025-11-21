@@ -52,6 +52,21 @@ graph TD
     %% Observability Links
     API_Pod -.->|OTLP Traces/Metrics| Monitor
     Worker_Pod -.->|OTLP Traces/Metrics| Monitor
+
+    %% Accessible color theme (WCAG-compliant contrast)
+    classDef ingress fill:#005A9C,stroke:#002C52,color:#FFFFFF,font-weight:bold;
+    classDef control fill:#0063B1,stroke:#002C52,color:#FFFFFF;
+    classDef workload fill:#0078D4,stroke:#004578,color:#FFFFFF;
+    classDef broker fill:#107C10,stroke:#0B5C0B,color:#FFFFFF;
+    classDef observability fill:#8A2DA5,stroke:#4C1A68,color:#FFFFFF;
+    classDef registry fill:#5C2D91,stroke:#32145A,color:#FFFFFF;
+
+    class Ingress ingress;
+    class API,API_Pod,Worker_Pod workload;
+    class Broker,Kafka,EH broker;
+    class Monitor observability;
+    class ACR registry;
+    class Client control;
 ```
 
 ```
