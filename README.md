@@ -14,7 +14,8 @@ The demo consists of two microservices:
 
 ## Architecture
 
-graph TD
+```mermaid
+Client
     Client([Client / Load Generator]) -->|POST /orders| Ingress[Ingress Controller]
     
     subgraph Azure_Cloud [Azure Cloud]
@@ -51,9 +52,7 @@ graph TD
     %% Observability Links
     API_Pod -.->|OTLP Traces/Metrics| Monitor
     Worker_Pod -.->|OTLP Traces/Metrics| Monitor
-    
 ```
-Client
    ↓ POST /orders
 orders-api (FastAPI)
    ↓ publish
