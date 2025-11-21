@@ -22,6 +22,9 @@
     },
     "applicationInsightsName": {
       "value": "orders-insights-dev"
+    },
+    "sshRSAPublicKey": {
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9demoOrdersKeyPlaceholder999999999 orders-demo@local"
     }
   }
 }
