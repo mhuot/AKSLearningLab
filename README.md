@@ -46,18 +46,22 @@ Processing, metrics, logs
 * Event-Hub-backlog-based autoscaling
 * Scale from 0 → N worker replicas
 * Real-time processing demos
-5. CI/CD with GitHub Actions
+5. Observability with OpenTelemetry
+* Instrument FastAPI + worker services for traces and metrics
+* Export telemetry via OTLP to Azure Monitor / Grafana dashboards
+* Correlate KEDA scaling decisions with application signals
+6. CI/CD with GitHub Actions
 * Build → Scan → Push → Deploy
 * ACR authentication
 * Automatic Helm releases
 * Environment separation
-6. Infrastructure as Code (Bicep)
+7. Infrastructure as Code (Bicep)
 * AKS cluster
 * Event Hub namespace + Event Hub
 * Storage account for checkpoints
 * ACR + Managed Identities + RBAC
 * Modularized Bicep design
-7. (Optional) Multi-Cluster with AKS Fleet Manager
+8. (Optional) Multi-Cluster with AKS Fleet Manager
 * Workload propagation
 * Multi-region deployments
 * Shared Event Hub backbone
@@ -130,32 +134,39 @@ This repository is designed to accompany a multi-part technical series.
 
 ### Session 1 — Architecture + Environment Build + Repo Bootstrap
 * Overview of event-driven architecture
-* Deploy AKS + Event Hubs + Storage + MI using Bicep
+* Deploy AKS + Storage + MI using Bicep
 * Repo structure & PRDs
 
 ### Session 2 — Build orders-api with GitHub Copilot
 * FastAPI + event producer
 * Dual-mode backend support
 * Local testing
+* Add OpenTelemetry tracing + metrics exporters for the API
 
 ### Session 3 — Build orders-worker with GitHub Copilot
 * Event consumer loop
 * Checkpointing & metrics
-* Test against Event Hubs
+* Test against Kafka
+* Wire worker logs/metrics into OpenTelemetry + Prometheus/Grafana
 
 ### Session 4 — Containerization + Helm Charts
 * Dockerfiles
 * Deploy both services to AKS with Helm
+* Configure OTLP exporter endpoints via Helm values
 
 ### Session 5 — CI/CD with GitHub Actions
 * Build pipelines
 * Deploy pipelines
 * ACR integration
+* Validate telemetry endpoints as part of smoke tests
 
 ### Session 6 — Event Hub Integration + KEDA Autoscaling
+* Add Event Hub integration to orders-api and order-worker
+* Deploy Event Hub
 * Event Hub consumer group
 * KEDA ScaledObject
 * Live autoscale demo
+* Trace end-to-end flow across Kafka/Event Hub + worker using OpenTelemetry dashboards
 
 ### Session 7 (Optional) — AKS Fleet Manager
 * Multi-cluster deployment
