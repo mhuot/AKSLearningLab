@@ -126,6 +126,7 @@ All resources are provisioned using the Bicep files under /infra.
 * kubectl
 * Helm
 * Docker
+* [act](https://github.com/nektos/act) (for local GitHub Actions runs)
 * GitHub CLI (optional)
 * VS Code + GitHub Copilot
 
@@ -143,6 +144,7 @@ This repository is designed to accompany a multi-part technical series.
 * Dual-mode backend support
 * Local testing
 * Add OpenTelemetry tracing + metrics exporters for the API wired to Azure Monitor/Application Insights
+* Demonstrate Makefile lint/build targets and local `act` workflow run
 
 ### Session 3 — Build orders-worker with GitHub Copilot
 * Event consumer loop
@@ -160,6 +162,7 @@ This repository is designed to accompany a multi-part technical series.
 * Deploy pipelines
 * ACR integration
 * Validate Azure Monitor / Application Insights connectivity as part of smoke tests
+* Show how to run workflows locally with `make ci-local` (act)
 
 ### Session 6 — Event Hub Integration + KEDA Autoscaling
 * Add Event Hub integration to orders-api and order-worker

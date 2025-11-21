@@ -16,6 +16,16 @@ This folder contains the end-to-end AKS Orders Demo referenced in the [root READ
 4. Use `docker build -t orders-api:dev services/orders-api` as a container sanity check.
 5. Point OpenTelemetry env vars (e.g., `OTEL_EXPORTER_OTLP_ENDPOINT`) at your Azure Monitor ingestion endpoint or local collector before running.
 
+### Makefile Shortcuts
+The repo ships with a `Makefile` inside this folder to reduce copy/paste during the livestream:
+- `make lint` — placeholder lint pass for API + worker.
+- `make build` — packages both Helm charts.
+- `make docker` — builds local images tagged with `IMAGE_REGISTRY` (default `ghcr.io/demo`).
+- `make deploy` — runs Docker builds then `helm upgrade` for both services.
+- `make ci-local` — runs GitHub Actions workflows locally via `act` (requires Docker + [`act`](https://github.com/nektos/act)).
+
+Set `IMAGE_REGISTRY`, `OTEL_EXPORTER_OTLP_ENDPOINT`, and other env vars via `.env` or shell before running targets.
+
 ## Stream Agenda Snapshot
 - **Session 1**: Provision AKS, Storage, Managed Identity, and Application Insights via Bicep while walking through these folders.
 - **Session 2**: Build the FastAPI producer with Kafka-first publishing and OTel instrumentation.
