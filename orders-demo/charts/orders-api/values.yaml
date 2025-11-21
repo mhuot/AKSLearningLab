@@ -1,4 +1,29 @@
 # Default values for orders-api Helm chart.
+replicaCount: 1
+
 image:
   repository: <acr>/orders-api
   tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  - name: KAFKA_BROKERS
+    value: kafka:9092
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: https://<application-insights-endpoint>
+
+resources: {}
+
+podAnnotations: {}
+
+podLabels: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 75
