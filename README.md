@@ -277,6 +277,10 @@ Feel free to:
 * Submit PRs
 * Suggest improvements or new demo scenarios
 
+## 📄 License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
+
 ⭐ Acknowledgements
 
 This project highlights Azure + GitHub working together across:
