@@ -108,15 +108,16 @@ orders-demo/
 
 ## 🌐 Environment & Prerequisites
 ### Azure Resources the Demo Uses
-| Resource	| Purpose|
+|Resource	| Purpose|
 | ----------- | ----------- |
 |AKS	| Runs the microservices |
 |ACR	| Stores Docker images |
-|Event Hubs	| Messaging backend (primary) |
-|Kafka (Strimzi)	| Optional in-cluster Kafka |
+|Event Hubs	| Messaging backend (phase 2) |
+|Kafka (Strimzi)	| Primary in-cluster Kafka (phase 1) |
 |Storage Account	| Event Hub checkpointing |
 |Managed Identity	| Secure broker access |
 |KEDA	| Event-driven autoscaling |
+|Azure Monitor + Application Insights| Collects OpenTelemetry traces/metrics/logs via OTLP ingestion |
 
 All resources are provisioned using the Bicep files under /infra.
 
@@ -134,31 +135,31 @@ This repository is designed to accompany a multi-part technical series.
 
 ### Session 1 — Architecture + Environment Build + Repo Bootstrap
 * Overview of event-driven architecture
-* Deploy AKS + Storage + MI using Bicep
+* Deploy AKS + Storage + MI + Application Insights/Log Analytics workspace using Bicep
 * Repo structure & PRDs
 
 ### Session 2 — Build orders-api with GitHub Copilot
 * FastAPI + event producer
 * Dual-mode backend support
 * Local testing
-* Add OpenTelemetry tracing + metrics exporters for the API
+* Add OpenTelemetry tracing + metrics exporters for the API wired to Azure Monitor/Application Insights
 
 ### Session 3 — Build orders-worker with GitHub Copilot
 * Event consumer loop
 * Checkpointing & metrics
 * Test against Kafka
-* Wire worker logs/metrics into OpenTelemetry + Prometheus/Grafana
+* Wire worker logs/metrics into OpenTelemetry + Azure Monitor/Grafana dashboards
 
 ### Session 4 — Containerization + Helm Charts
 * Dockerfiles
 * Deploy both services to AKS with Helm
-* Configure OTLP exporter endpoints via Helm values
+* Configure OTLP exporter endpoints (Application Insights ingestion + optional self-hosted collector) via Helm values
 
 ### Session 5 — CI/CD with GitHub Actions
 * Build pipelines
 * Deploy pipelines
 * ACR integration
-* Validate telemetry endpoints as part of smoke tests
+* Validate Azure Monitor / Application Insights connectivity as part of smoke tests
 
 ### Session 6 — Event Hub Integration + KEDA Autoscaling
 * Add Event Hub integration to orders-api and order-worker
@@ -166,7 +167,7 @@ This repository is designed to accompany a multi-part technical series.
 * Event Hub consumer group
 * KEDA ScaledObject
 * Live autoscale demo
-* Trace end-to-end flow across Kafka/Event Hub + worker using OpenTelemetry dashboards
+* Trace end-to-end flow across Kafka/Event Hub + worker using Azure Monitor + Grafana dashboards
 
 ### Session 7 (Optional) — AKS Fleet Manager
 * Multi-cluster deployment

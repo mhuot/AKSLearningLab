@@ -4,14 +4,14 @@
 - Provide a public-facing REST API that receives order events from demo clients and publishes them to the Strimzi-managed Kafka cluster (Phase 1), then extends to Azure Event Hubs in Phase 2 (Session 6 of the series).
 - Showcase GitHub Copilot-driven development, containerization, and AKS deployment patterns during the livestream series.
 - Serve as the source of truth for order creation, status lookup, and replay scenarios in the Orders Demo architecture.
-- Demonstrate end-to-end observability by instrumenting the API with OpenTelemetry exporters for traces, metrics, and logs that surface in Azure Monitor/Grafana dashboards.
+- Demonstrate end-to-end observability by instrumenting the API with OpenTelemetry exporters for traces, metrics, and logs that surface in Azure Monitor/Application Insights (primary) and optional Grafana dashboards.
 
 ## 2. Success Criteria
 - API receives ≥100 requests/second in load tests without error or noticeable latency increase.
 - 99% of requests complete in <250 ms at P95 latency while targeting Kafka (Phase 1) and stay <300 ms once Event Hub support lands.
 - Every accepted order results in exactly one message written to the active backend with traceable metadata.
 - Live dashboards/GitHub Actions logs clearly show traffic flowing end-to-end during demos.
-- OpenTelemetry traces and metrics from orders-api and orders-worker are correlated in a shared dashboard within 60 seconds of emission.
+- OpenTelemetry traces and metrics from orders-api and orders-worker are correlated in a shared Azure Monitor workbook (and mirrored Grafana panel) within 60 seconds of emission.
 
 ## 3. In Scope
 - CRUD-style endpoints for orders (create, update status, retrieve, list recent).
@@ -19,7 +19,7 @@
 - Event Hub integration planned as a later milestone (Phase 2) reusing the same publisher abstraction interface.
 - Basic schema validation, idempotency token handling, and lightweight auth (API key header) for demo purposes.
 - Health and readiness endpoints for AKS/KEDA probes.
-- OpenTelemetry instrumentation (FastAPI auto-instrumentation + custom spans/metrics) with OTLP exporters configurable via Helm.
+- OpenTelemetry instrumentation (FastAPI auto-instrumentation + custom spans/metrics) with OTLP exporters configurable via Helm, defaulting to the Azure Monitor/Application Insights ingestion endpoint.
 
 ### Out of Scope
 - Payment processing or downstream fulfillment logic.
@@ -60,21 +60,22 @@
 - **Performance**: Sustain 100 RPS on 0.5 vCPU pod; autoscale via KEDA when CPU >70% (Phase 1) and later add KEDA Kafka/Event Hub backlog scalers.
 - **Reliability**: Retry publish failures (3 attempts, exponential backoff). Log dead-letter scenarios for worker replay demonstration.
 - **Security**: API key required; secrets managed via Kubernetes Secret mounted as env var. Kafka credentials stored in Secret (username/password) initially; Managed Identity only needed once Event Hubs integration arrives.
-- **Observability**: Emit structured logs (JSON) with `requestId`, `orderId`; instrument traces/metrics via OpenTelemetry SDK with OTLP exporters, defaulting to Azure Monitor or self-hosted Grafana Tempo/Loki stack.
+- **Observability**: Emit structured logs (JSON) with `requestId`, `orderId`; instrument traces/metrics via OpenTelemetry SDK with OTLP exporters, defaulting to Azure Monitor/Application Insights. Optional secondary exporter targets self-hosted Grafana Tempo/Loki stack.
 
 ## 7. External Dependencies
 - Strimzi Kafka deployment inside AKS (required for Phase 1), including bootstrap service, topic, and user credentials.
 - Azure Event Hubs namespace + event hub (Phase 2) for showcasing cloud-native messaging once Kafka path is stable.
 - Azure Storage account for Event Hub checkpointing (shared with worker, needed Phase 2).
+- Azure Monitor Log Analytics workspace + Application Insights component configured to accept OTLP traffic (Bicep provisions workspace, attaches to AKS via container insights).
 
 ## 8. Configuration & Deployment
-- Config via environment variables (Phase 1): `KAFKA_BROKERS`, `KAFKA_TOPIC`, `KAFKA_USERNAME`, `KAFKA_PASSWORD`, `API_KEY`. Additional vars (`BACKEND_MODE`, `EVENTHUB_NAMESPACE`, etc.) land in Phase 2.
+- Config via environment variables (Phase 1): `KAFKA_BROKERS`, `KAFKA_TOPIC`, `KAFKA_USERNAME`, `KAFKA_PASSWORD`, `API_KEY`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_RESOURCE_ATTRIBUTES`. Additional vars (`BACKEND_MODE`, `EVENTHUB_NAMESPACE`, etc.) land in Phase 2.
 - Helm chart templating for Deployment, Service, HPA/KEDA ScaledObject.
 - CI/CD: GitHub Actions `build-api.yml` builds/pushes image; `deploy.yml` applies Helm release to AKS.
 
 ## 9. Metrics & Telemetry
 - OpenTelemetry SDK auto-instrumentation for FastAPI/Uvicorn plus custom spans around Kafka/Event Hub publish calls.
-- OTLP exporters configured via env/Helm values pointing at Azure Monitor (Application Insights) or the demo Grafana/Tempo stack.
+- OTLP exporters configured via env/Helm values pointing at Azure Monitor Application Insights ingestion (default) or the demo Grafana/Tempo stack.
 - Prometheus metrics surfaced via OpenTelemetry metric pipeline: request counts, publish latency histogram, failure counts, cache depth gauge.
 - Log correlation using OpenTelemetry logging integration so `requestId` ties logs to traces.
 
