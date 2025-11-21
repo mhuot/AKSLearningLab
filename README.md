@@ -178,13 +178,13 @@ This repository is designed to accompany a multi-part technical series.
 * Global autoscaling
 
 ## 🧪 Running the Demo
-1. Deploy the infrastructur
+1. Deploy the infrastructure (using the provided dev parameters file)
 ```
 az deployment sub create \
   --name orders-demo \
   --location <region> \
   --template-file infra/main.bicep \
-  --parameters environmentName=dev
+   --parameters @infra/parameters.dev.json
 ```
 2. Get AKS credentials
 ```
