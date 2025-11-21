@@ -14,11 +14,28 @@ serviceAccount:
   create: true
   name: ""
 
-env:
-  - name: KAFKA_BROKERS
-    value: kafka:9092
-  - name: WORKER_POLL_INTERVAL
-    value: "1"
+config:
+  configMapName: ""
+  secretName: ""
+  existingSecretName: ""
+  env:
+    BACKEND_MODE: kafka
+    KAFKA_BROKERS: kafka:9092
+    KAFKA_TOPIC: orders
+    KAFKA_GROUP: orders-worker
+    EVENTHUB_NAMESPACE: demo-namespace.servicebus.windows.net
+    EVENTHUB_NAME: orders
+    EVENTHUB_CONSUMER_GROUP: orders-worker
+    EVENTHUB_CLIENT_ID: 00000000-0000-0000-0000-000000000000
+    STORAGE_ACCOUNT: ordersstorage001
+    POLL_INTERVAL: "0.1"
+    OTEL_EXPORTER_OTLP_ENDPOINT: https://<application-insights-endpoint>
+    OTEL_RESOURCE_ATTRIBUTES: service.namespace=orders-demo,service.name=orders-worker,env=dev
+  secretEnv:
+    KAFKA_USERNAME: kafka-user
+    KAFKA_PASSWORD: kafka-pass
+
+extraEnv: []
 
 resources: {}
 

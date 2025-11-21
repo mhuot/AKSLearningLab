@@ -30,10 +30,29 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- $configMapName := default (printf "%s-env" (include "orders-worker.fullname" .)) .Values.config.configMapName }}
+          {{- $secretName := default (printf "%s-secret" (include "orders-worker.fullname" .)) .Values.config.secretName }}
+          {{- $existingSecret := .Values.config.existingSecretName }}
+          {{- if or .Values.config.env (or .Values.config.secretEnv $existingSecret) }}
+          envFrom:
+            {{- if .Values.config.env }}
+            - configMapRef:
+                name: {{ $configMapName }}
+            {{- end }}
+            {{- if $existingSecret }}
+            - secretRef:
+                name: {{ $existingSecret }}
+            {{- else if .Values.config.secretEnv }}
+            - secretRef:
+                name: {{ $secretName }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.extraEnv }}
           env:
-            {{- range .Values.env }}
+            {{- range .Values.extraEnv }}
             - name: {{ .name }}
               value: "{{ .value }}"
             {{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

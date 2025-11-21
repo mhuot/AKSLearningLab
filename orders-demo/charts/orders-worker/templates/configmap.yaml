@@ -1,0 +1,13 @@
+{{- if .Values.config.env }}
+{{- $configMapName := default (printf "%s-env" (include "orders-worker.fullname" .)) .Values.config.configMapName }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $configMapName }}
+  labels:
+    {{- include "orders-worker.labels" . | nindent 4 }}
+data:
+{{- range $key, $value := .Values.config.env }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
