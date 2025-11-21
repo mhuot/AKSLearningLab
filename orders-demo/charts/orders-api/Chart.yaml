@@ -1,0 +1,4 @@
+apiVersion: v2
+name: orders-api
+version: 0.1.0
+description: Placeholder Helm chart for the orders API service.

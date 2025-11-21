@@ -1,0 +1,4 @@
+# Default values for orders-worker Helm chart.
+image:
+  repository: <acr>/orders-worker
+  tag: latest

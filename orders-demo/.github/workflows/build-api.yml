@@ -1,0 +1,14 @@
+name: Build orders-api
+
+on:
+  push:
+    paths:
+      - 'orders-demo/services/orders-api/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Placeholder for orders-api build"
