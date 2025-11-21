@@ -248,16 +248,21 @@ az deployment sub create \
   --template-file infra/main.bicep \
    --parameters @infra/parameters.dev.json
 ```
+    _Shortcut_: Run `make infra-deploy` from `orders-demo/` to execute the same deployment and capture its outputs under `deploy/generated/infra-outputs.json`.
 2. Get AKS credentials
 ```
 az aks get-credentials \
   -g <resource-group> \
   -n <aks-name>
 ```
-3. Deploy the services with Helm
+3. Convert the captured outputs into Helm overrides
 ```
-helm upgrade --install orders-api ./charts/orders-api
-helm upgrade --install orders-worker ./charts/orders-worker
+make helm-values
+```
+    This creates `deploy/generated/orders-api.values.generated.yaml` and `deploy/generated/orders-worker.values.generated.yaml`, pre-populated with the actual Event Hub namespace, storage account, and Application Insights connection string from Azure.
+4. Deploy the services with Helm (the `make deploy` target chains docker builds → `helm-values` → Helm releases)
+```
+make deploy
 ```
 4. Generate load
 ```

@@ -1,0 +1,9 @@
+# Generated deployment artifacts
+deploy/generated/
+
+# Bicep build outputs
+infra/*.json
+
+# Python cache
+__pycache__/
+*/__pycache__/
