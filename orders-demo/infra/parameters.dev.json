@@ -6,7 +6,7 @@
       "value": "dev"
     },
     "location": {
-      "value": "eastus"
+      "value": "northcentralus"
     },
     "aksName": {
       "value": "orders-aks-dev"
@@ -18,10 +18,19 @@
       "value": "orders-eh-dev"
     },
     "storageAccountName": {
-      "value": "ordersstorage001"
+      "value": ""
+    },
+    "storageAccountPrefix": {
+      "value": "ordersstorage"
+    },
+    "storageAccountRandomize": {
+      "value": true
     },
     "applicationInsightsName": {
       "value": "orders-insights-dev"
+    },
+    "kubernetesVersion": {
+      "value": "1.33.5"
     },
     "sshRSAPublicKey": {
       "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9demoOrdersKeyPlaceholder999999999 orders-demo@local"

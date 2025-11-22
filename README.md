@@ -181,6 +181,17 @@ orders-demo/
 |KEDA	| Event-driven autoscaling |
 |Azure Monitor + Application Insights| Collects OpenTelemetry traces/metrics/logs via OTLP ingestion |
 
+> Storage accounts are globally unique. By default the Bicep template now appends a deterministic suffix to the `storageAccountPrefix` value (see `infra/parameters.dev.json`) so every environment gets its own valid name. Set `storageAccountRandomize` to `false` and provide `storageAccountName` if you need to pin a specific name.
+
+### Choosing Regions & AKS Versions
+- Update `infra/parameters.<env>.json` and/or export `DEPLOYMENT_LOCATION` before running `make infra-deploy` so resources land in the region you intend to demo from.
+- AKS only supports a subset of Kubernetes versions per region. Always verify the available versions before deploying:
+    ```bash
+    az aks get-versions --location <region> --output table
+    ```
+    Copy a non-preview version (for example `1.33.5` in `northcentralus`) into the `kubernetesVersion` parameter if the default is not available.
+- If you switch regions later, rerun the command above for the new region and update the parameter or pass `-p kubernetesVersion=<version>` when invoking `az deployment`/`make infra-deploy`.
+
 All resources are provisioned using the Bicep files under /infra.
 
 **Tools Required**

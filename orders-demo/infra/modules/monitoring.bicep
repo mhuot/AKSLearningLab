@@ -40,7 +40,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
     Application_Type: 'web'
     Flow_Type: 'Bluefield'
     Request_Source: 'rest'
-    IngestionMode: 'ApplicationInsights'
+    IngestionMode: 'LogAnalytics'
     WorkspaceResourceId: logAnalytics.id
   }
 }

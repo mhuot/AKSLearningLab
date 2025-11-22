@@ -15,8 +15,14 @@ param acrName string
 @description('Event Hubs namespace name.')
 param eventHubNamespace string
 
-@description('Storage account name used for Event Hub checkpoints and diagnostics.')
-param storageAccountName string
+@description('Explicit storage account name used when randomization is disabled (3-24 lowercase alphanumeric).')
+param storageAccountName string = 'ordersstorage001'
+
+@description('Base prefix (3-11 lowercase alphanumeric) for generated storage account names.')
+param storageAccountPrefix string = 'ordersstorage'
+
+@description('When true, append a deterministic suffix to storageAccountPrefix to ensure global uniqueness.')
+param storageAccountRandomize bool = true
 
 @description('Application Insights component name.')
 param applicationInsightsName string
@@ -55,7 +61,7 @@ param agentPoolNodeCount int = 2
 param agentPoolMaxCount int = 5
 
 @description('Kubernetes version to deploy onto AKS.')
-param kubernetesVersion string = '1.28.5'
+param kubernetesVersion string = '1.33.5'
 
 @description('Admin username for AKS nodes.')
 param linuxAdminUsername string = 'aksadmin'
@@ -64,6 +70,10 @@ var standardTags = union({
 	Environment: environmentName
 	Project: 'orders-demo'
 }, tags)
+
+var storageSuffix = toLower(substring(uniqueString(subscription().id, environmentName, resourceGroupName), 0, 8))
+var generatedStorageAccountName = toLower('${storageAccountPrefix}${storageSuffix}')
+var effectiveStorageAccountName = storageAccountRandomize || empty(storageAccountName) ? generatedStorageAccountName : toLower(storageAccountName)
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 	name: resourceGroupName
@@ -98,7 +108,7 @@ module storage './modules/storage.bicep' = {
 	name: 'storage-${environmentName}'
 	scope: rg
 	params: {
-		name: storageAccountName
+		name: effectiveStorageAccountName
 		location: location
 		tags: standardTags
 	}
@@ -168,5 +178,5 @@ output applicationInsightsConnectionString string = monitoring.outputs.applicati
 output logAnalyticsWorkspaceId string = monitoring.outputs.logAnalyticsId
 output eventHubNamespace string = eventHubs.outputs.namespaceNameOut
 output eventHubName string = eventHubs.outputs.eventHubNameOut
-output storageAccountName string = storage.outputs.name
+output storageAccountName string = effectiveStorageAccountName
 output acrName string = acr.outputs.name
