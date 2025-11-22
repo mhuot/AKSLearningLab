@@ -191,6 +191,7 @@ orders-demo/
     ```
     Copy a non-preview version (for example `1.33.5` in `northcentralus`) into the `kubernetesVersion` parameter if the default is not available.
 - If you switch regions later, rerun the command above for the new region and update the parameter or pass `-p kubernetesVersion=<version>` when invoking `az deployment`/`make infra-deploy`.
+- The default AKS system pool uses the `Standard_D2as_v5` VM size (8 cores total for two nodes). If your subscription shows `QuotaExceeded` for that SKU in the chosen region, either request more cores via the Azure Portal (`Usage + quotas` → `standardDASv5Family`) or override `agentPoolVmSize`/`agentPoolNodeCount` in `infra/parameters.<env>.json` to a SKU you already have capacity for.
 
 All resources are provisioned using the Bicep files under /infra.
 
