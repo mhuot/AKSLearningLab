@@ -111,13 +111,19 @@ helm-upgrade:
 	else \
 		API_OVERRIDES=""; \
 	fi; \
-	helm upgrade --install orders-api $(CHARTS_DIR)/orders-api $$API_OVERRIDES
+	helm upgrade --install orders-api $(CHARTS_DIR)/orders-api \
+		--set image.repository=$(IMAGE_REGISTRY)/orders-api \
+		--set image.tag=dev \
+		$$API_OVERRIDES
 	@if [ -f $(HELM_WORKER_VALUES_FILE) ]; then \
 		WORKER_OVERRIDES="-f $(HELM_WORKER_VALUES_FILE)"; \
 	else \
 		WORKER_OVERRIDES=""; \
 	fi; \
-	helm upgrade --install orders-worker $(CHARTS_DIR)/orders-worker $$WORKER_OVERRIDES
+	helm upgrade --install orders-worker $(CHARTS_DIR)/orders-worker \
+		--set image.repository=$(IMAGE_REGISTRY)/orders-worker \
+		--set image.tag=dev \
+		$$WORKER_OVERRIDES
 
 deploy: docker helm-values helm-upgrade
 
