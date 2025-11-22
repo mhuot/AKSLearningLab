@@ -295,6 +295,13 @@ make deploy
 > - After `make infra-deploy` succeeds, the Makefile reads the emitted `acrLoginServer` and automatically tags images as `<your-acr>.azurecr.io/...`. For alternate registries, override with `IMAGE_REGISTRY=<registry> make deploy`.
 > - The Helm upgrade now receives `--set image.repository=<registry>/orders-{api,worker}` and `--set image.tag=dev` automatically, so you do not need to edit the charts to change image names.
 > - Docker builds default to `linux/amd64` (via `DOCKER_DEFAULT_PLATFORM`) so images run on AKS nodes. Override with `DOCKER_DEFAULT_PLATFORM=linux/arm64 make deploy` only if your cluster is arm64.
+
+5. Push the freshly built images so AKS can pull them
+```
+make push   # runs docker push for both tags in the configured IMAGE_REGISTRY
+```
+    - Shortcut: `make deploy push` to build + render + push in a single command after logging in with `az acr login`.
+    - If you prefer manual pushes, run `docker push <registry>/orders-api:dev` and `docker push <registry>/orders-worker:dev` immediately after `make deploy` completes.
 4. Generate load
 ```
 hey -z 30s -q 10 https://<api-endpoint>/orders

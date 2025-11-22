@@ -31,7 +31,7 @@ IMAGE_REGISTRY := $(DEFAULT_IMAGE_REGISTRY)
 endif
 endif
 
-.PHONY: help lint lint-api lint-worker build build-api build-worker docker docker-api docker-worker deploy helm-install helm-upgrade ci-local infra-deploy helm-values clean-generated
+.PHONY: help lint lint-api lint-worker build build-api build-worker docker docker-api docker-worker push push-api push-worker deploy helm-install helm-upgrade ci-local infra-deploy helm-values clean-generated
 
 help:
 	@echo "Available targets:"
@@ -67,6 +67,14 @@ docker-api:
 
 docker-worker:
 	docker build -t $(IMAGE_REGISTRY)/orders-worker:dev $(WORKER_DIR)
+
+push: push-api push-worker
+
+push-api:
+	docker push $(IMAGE_REGISTRY)/orders-api:dev
+
+push-worker:
+	docker push $(IMAGE_REGISTRY)/orders-worker:dev
 
 $(GENERATED_DIR):
 	mkdir -p $@
