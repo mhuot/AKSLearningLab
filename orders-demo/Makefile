@@ -2,7 +2,8 @@ PYTHON ?= python3
 API_DIR := services/orders-api
 WORKER_DIR := services/orders-worker
 CHARTS_DIR := charts
-IMAGE_REGISTRY ?= ghcr.io/demo
+DEFAULT_IMAGE_REGISTRY := ghcr.io/demo
+IMAGE_REGISTRY ?=
 
 INFRA_MAIN := infra/main.bicep
 INFRA_PARAMETERS ?= infra/parameters.dev.json
@@ -19,6 +20,15 @@ GENERATED_DIR := deploy/generated
 INFRA_OUTPUTS := $(GENERATED_DIR)/infra-outputs.json
 HELM_API_VALUES_FILE ?= $(GENERATED_DIR)/orders-api.values.generated.yaml
 HELM_WORKER_VALUES_FILE ?= $(GENERATED_DIR)/orders-worker.values.generated.yaml
+
+INFRA_ACR_LOGIN_SERVER := $(shell if [ -f $(INFRA_OUTPUTS) ]; then $(PYTHON) -c "import json,sys; from pathlib import Path; data=json.loads(Path('$(INFRA_OUTPUTS)').read_text()); print(data.get('acrLoginServer', {}).get('value',''))"; fi)
+ifeq ($(strip $(IMAGE_REGISTRY)),)
+ifneq ($(strip $(INFRA_ACR_LOGIN_SERVER)),)
+IMAGE_REGISTRY := $(INFRA_ACR_LOGIN_SERVER)
+else
+IMAGE_REGISTRY := $(DEFAULT_IMAGE_REGISTRY)
+endif
+endif
 
 .PHONY: help lint lint-api lint-worker build build-api build-worker docker docker-api docker-worker deploy helm-install helm-upgrade ci-local infra-deploy helm-values clean-generated
 

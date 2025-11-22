@@ -292,6 +292,7 @@ make deploy
 > Common gotchas:
 > - Install Helm locally (`brew install helm`) before running any Make targets that render charts.
 > - Re-run `az aks get-credentials` if you rotated clusters or kubeconfig entries; Helm needs an active context that points at the AKS control plane.
+> - After `make infra-deploy` succeeds, the Makefile reads the emitted `acrLoginServer` and automatically tags images as `<your-acr>.azurecr.io/...`. For alternate registries, override with `IMAGE_REGISTRY=<registry> make deploy`.
 4. Generate load
 ```
 hey -z 30s -q 10 https://<api-endpoint>/orders
