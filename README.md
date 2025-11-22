@@ -203,6 +203,7 @@ All resources are provisioned using the Bicep files under /infra.
 * [act](https://github.com/nektos/act) (for local GitHub Actions runs)
 * GitHub CLI (optional)
 * VS Code + GitHub Copilot
+> All of the Make targets (`infra-deploy`, `helm-values`, `deploy`, etc.) live inside `orders-demo/`. `cd orders-demo` before running the commands below so the Makefile and generated files resolve correctly.
 
 ## 📺 Livestream / YouTube Series Curriculum
 
@@ -278,6 +279,7 @@ az aks get-credentials \
   -g <resource-group> \
   -n <aks-name>
 ```
+        Run this right after the infrastructure deploy (add `--overwrite-existing` if needed). If `helm` ever says `kubernetes cluster unreachable` or tries to talk to `localhost:8080`, it means this step was skipped or pointed at the wrong cluster.
 3. Convert the captured outputs into Helm overrides
 ```
 make helm-values
@@ -287,6 +289,9 @@ make helm-values
 ```
 make deploy
 ```
+> Common gotchas:
+> - Install Helm locally (`brew install helm`) before running any Make targets that render charts.
+> - Re-run `az aks get-credentials` if you rotated clusters or kubeconfig entries; Helm needs an active context that points at the AKS control plane.
 4. Generate load
 ```
 hey -z 30s -q 10 https://<api-endpoint>/orders
