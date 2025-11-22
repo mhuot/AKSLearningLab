@@ -90,83 +90,44 @@ Processing, metrics, logs
 ```
 
 ## 🎯 Skills Demonstrated
-* Code generation from PRDs
-* Scaffolding FastAPI apps
-* Creating Dockerfiles & Helm charts
-* Accelerating Kubernetes configuration
-2. Event-Driven Architecture
-* Producers and consumers
-* Kafka and Event Hub dual-mode backend
-* Consumer groups and checkpointing
-* Message publication and processing patterns
-3. Kubernetes on Azure
-* Deploying microservices with Helm
-* Configuring Deployments, Services, and Ingress
-* Using Managed Identities with AKS
-* Integrating with ACR
-4. Autoscaling with KEDA
-* Event-Hub-backlog-based autoscaling
-* Scale from 0 → N worker replicas
-* Real-time processing demos
-5. Observability with OpenTelemetry
-* Instrument FastAPI + worker services for traces and metrics
-* Export telemetry via OTLP to Azure Monitor / Grafana dashboards
-* Correlate KEDA scaling decisions with application signals
-6. CI/CD with GitHub Actions
-* Build → Scan → Push → Deploy
-* ACR authentication
-* Automatic Helm releases
-* Environment separation
-7. Infrastructure as Code (Bicep)
-* AKS cluster
-* Event Hub namespace + Event Hub
-* Storage account for checkpoints
-* ACR + Managed Identities + RBAC
-* Modularized Bicep design
-8. (Optional) Multi-Cluster with AKS Fleet Manager
-* Workload propagation
-* Multi-region deployments
-* Shared Event Hub backbone
-* Cluster-aware autoscaling
+1. **Copilot-assisted application scaffolding**
+    - Code generation from PRDs and architectural briefs
+    - Scaffolding FastAPI services, Dockerfiles, and Helm charts
+    - Accelerating Kubernetes configuration through reusable manifests
+2. **Event-driven architecture**
+    - Designing producers/consumers with Kafka _and_ Azure Event Hubs
+    - Managing consumer groups, checkpointing, and dual-mode backends
+    - Demonstrating publish/consume patterns for real-time orders traffic
+3. **Kubernetes on Azure**
+    - Deploying microservices with Helm and GitOps-style overrides
+    - Configuring Deployments, Services, Ingress, and managed identities
+    - Integrating AKS with ACR and other Azure control-plane resources
+4. **Autoscaling with KEDA**
+    - Event Hub backlog-driven scale-up/scale-down workflows
+    - Scaling workers from 0 → N replicas for cost efficiency
+    - Live demos tying traffic to scaling behavior
+5. **Observability with OpenTelemetry**
+    - Instrumenting FastAPI + worker services for traces/metrics/logs
+    - Exporting OTLP data into Azure Monitor and Grafana dashboards
+    - Correlating KEDA decisions with application telemetry
+6. **CI/CD with GitHub Actions**
+    - Build → scan → push → deploy workflows targeting ACR/AKS
+    - Secure ACR authentication and automated Helm releases
+    - Environment separation for dev/demo vs. future stages
+7. **Infrastructure as Code (Bicep)**
+    - Provisioning AKS, Event Hubs, storage, identities, and RBAC
+    - Modularized Bicep design tuned for demos and reproducibility
+8. **(Optional) AKS Fleet Manager**
+    - Multi-cluster propagation, shared Event Hub backbones
+    - Multi-region rollouts and cluster-aware autoscaling experiments
 ---
 ## 📚 Repository Structure
-```
-orders-demo/
-│
-├── docs/
-│   ├── orders-api-prd.md
-│   └── orders-worker-prd.md
-│
-├── infra/
-│   ├── main.bicep
-│   └── modules/
-│       ├── acr.bicep
-│       ├── aks.bicep
-│       ├── eventhubs.bicep
-│       ├── storage.bicep
-│       ├── identity.bicep
-│       └── roles.bicep
-│
-├── services/
-│   ├── orders-api/
-│   │   ├── app/
-│   │   ├── Dockerfile
-│   │   └── requirements.txt
-│   └── orders-worker/
-│       ├── app/
-│       ├── Dockerfile
-│       └── requirements.txt
-│
-├── charts/
-│   ├── orders-api/
-│   └── orders-worker/
-│
-└── .github/
-    └── workflows/
-        ├── build-api.yml
-        ├── build-worker.yml
-        └── deploy.yml
-```
+- Top-level code lives under `orders-demo/`. That workspace contains the infra modules, services, Helm charts, docs, and GitHub Actions workflows.
+- For a folder-by-folder breakdown, local dev tips, and Makefile notes, jump to `orders-demo/README.md`. This root doc stays oriented on architecture, prerequisites, and how to run the full demo.
+
+## 🗂️ Documentation Guide
+- `README.md` (this file) covers the big picture: why the demo exists, architectural context, prerequisites, and the end-to-end deployment/runbook.
+- `orders-demo/README.md` captures workspace internals—detailed folder descriptions, Make targets, local dev steps, and the session-by-session agenda.
 
 ## 🌐 Environment & Prerequisites
 ### Azure Resources the Demo Uses
@@ -207,72 +168,38 @@ All resources are provisioned using the Bicep files under /infra.
 
 ## 📺 Livestream / YouTube Series Curriculum
 
-This repository is designed to accompany a multi-part technical series.
-
-### Session 1 — Architecture + Environment Build + Repo Bootstrap
-* Overview of event-driven architecture
-* Deploy AKS + Storage + MI + Application Insights/Log Analytics workspace using Bicep
-* Repo structure & PRDs
-
-### Session 2 — Build orders-api with GitHub Copilot
-* FastAPI + event producer
-* Dual-mode backend support
-* Local testing
-* Add OpenTelemetry tracing + metrics exporters for the API wired to Azure Monitor/Application Insights
-* Demonstrate Makefile lint/build targets and local `act` workflow run
-
-### Session 3 — Build orders-worker with GitHub Copilot
-* Event consumer loop
-* Checkpointing & metrics
-* Test against Kafka
-* Wire worker logs/metrics into OpenTelemetry + Azure Monitor/Grafana dashboards
-
-### Session 4 — Containerization + Helm Charts
-* Dockerfiles
-* Deploy both services to AKS with Helm
-* Configure OTLP exporter endpoints (Application Insights ingestion + optional self-hosted collector) via Helm values
-
-### Session 5 — CI/CD with GitHub Actions
-* Build pipelines
-* Deploy pipelines
-* ACR integration
-* Validate Azure Monitor / Application Insights connectivity as part of smoke tests
-* Show how to run workflows locally with `make ci-local` (act)
-
-### Session 6 — Event Hub Integration + KEDA Autoscaling
-* Add Event Hub integration to orders-api and order-worker
-* Deploy Event Hub
-* Event Hub consumer group
-* KEDA ScaledObject
-* Live autoscale demo
-* Trace end-to-end flow across Kafka/Event Hub + worker using Azure Monitor + Grafana dashboards
-
-### Session 7 (Optional) — AKS Fleet Manager
-* Multi-cluster deployment
-* Shared Event Hub backbone
-* Global autoscaling
+A six-part livestream (plus an optional Fleet Manager add-on) walks through the journey: bootstrap the Azure environment, build the producer and worker, containerize + deploy with Helm, wire up CI/CD, and finish with Event Hub + KEDA autoscaling. For the detailed agenda, session checklists, and speaker notes, see `orders-demo/README.md`.
 
 ## 🧪 Running the Demo
+
 1. Deploy the infrastructure (using the provided dev parameters file)
-```
+
+```bash
 az deployment sub create \
-  --name orders-demo \
-  --location <region> \
-  --template-file infra/main.bicep \
-   --parameters @infra/parameters.dev.json
+    --name orders-demo \
+    --location <region> \
+    --template-file infra/main.bicep \
+    --parameters @infra/parameters.dev.json
 ```
-    _Shortcut_: Run `make infra-deploy` from `orders-demo/` to execute the same deployment and capture its outputs under `deploy/generated/infra-outputs.json`.
-    - `make infra-deploy` now looks for an SSH public key at `~/.ssh/id_rsa.pub`. Override this path with `SSH_PUBLIC_KEY_PATH=~/.ssh/orders-demo.pub make infra-deploy` or create a key with `ssh-keygen -t rsa -b 4096 -f ~/.ssh/orders-demo`.
-    - One-time setup: ensure your subscription is registered for the monitoring providers AKS relies on:
-      ```
-      az provider register --namespace Microsoft.OperationsManagement --wait
-      az provider register --namespace Microsoft.OperationalInsights --wait
-      ```
-        - Role assignments rely on Azure built-in roles. If you ever see `RoleDefinitionDoesNotExist`, rerun:
-            ```bash
-            az role definition list --name "Azure Event Hubs Data Sender" --query "[0].name" -o tsv
-            ```
-            Compare the GUID output with the value in `orders-demo/infra/modules/roles.bicep` (repeat for the other role names listed there). Update the file if Microsoft publishes new IDs before deploying again.
+
+_Shortcut_: Run `make infra-deploy` from `orders-demo/` to execute the same deployment and capture its outputs under `deploy/generated/infra-outputs.json`.
+
+_SSH key_: `make infra-deploy` looks for a public key at `~/.ssh/id_rsa.pub`. Override this path with `SSH_PUBLIC_KEY_PATH=~/.ssh/orders-demo.pub make infra-deploy` or create a key with `ssh-keygen -t rsa -b 4096 -f ~/.ssh/orders-demo`.
+
+_One-time provider registration:_
+
+```bash
+az provider register --namespace Microsoft.OperationsManagement --wait
+az provider register --namespace Microsoft.OperationalInsights --wait
+```
+
+_Role assignments_: If you ever see `RoleDefinitionDoesNotExist`, rerun:
+
+```bash
+az role definition list --name "Azure Event Hubs Data Sender" --query "[0].name" -o tsv
+```
+
+Compare the GUID output with the value in `orders-demo/infra/modules/roles.bicep` (repeat for the other role names listed there). Update the file if Microsoft publishes new IDs before deploying again.
 2. Get AKS credentials
 ```
 az aks get-credentials \
@@ -289,20 +216,20 @@ make helm-values
 ```
 make deploy
 ```
-> Common gotchas:
-> - Install Helm locally (`brew install helm`) before running any Make targets that render charts.
-> - Re-run `az aks get-credentials` if you rotated clusters or kubeconfig entries; Helm needs an active context that points at the AKS control plane.
-> - After `make infra-deploy` succeeds, the Makefile reads the emitted `acrLoginServer` and automatically tags images as `<your-acr>.azurecr.io/...`. For alternate registries, override with `IMAGE_REGISTRY=<registry> make deploy`.
-> - The Helm upgrade now receives `--set image.repository=<registry>/orders-{api,worker}` and `--set image.tag=dev` automatically, so you do not need to edit the charts to change image names.
-> - Docker builds default to `linux/amd64` (via `DOCKER_DEFAULT_PLATFORM`) so images run on AKS nodes. Override with `DOCKER_DEFAULT_PLATFORM=linux/arm64 make deploy` only if your cluster is arm64.
+    > Common gotchas:
+    > - Install Helm locally (`brew install helm`) before running any Make targets that render charts.
+    > - Re-run `az aks get-credentials` if you rotated clusters or kubeconfig entries; Helm needs an active context that points at the AKS control plane.
+    > - After `make infra-deploy` succeeds, the Makefile reads the emitted `acrLoginServer` and automatically tags images as `<your-acr>.azurecr.io/...`. For alternate registries, override with `IMAGE_REGISTRY=<registry> make deploy`.
+    > - The Helm upgrade now receives `--set image.repository=<registry>/orders-{api,worker}` and `--set image.tag=dev` automatically, so you do not need to edit the charts to change image names.
+    > - Docker builds default to `linux/amd64` (via `DOCKER_DEFAULT_PLATFORM`) so images run on AKS nodes. Override with `DOCKER_DEFAULT_PLATFORM=linux/arm64 make deploy` only if your cluster is arm64.
 
-5. Push the freshly built images so AKS can pull them
+5. Push the images to ACR so AKS can pull them (after logging in with `az acr login`)
 ```
-make push   # runs docker push for both tags in the configured IMAGE_REGISTRY
+make push
 ```
-    - Shortcut: `make deploy push` to build + render + push in a single command after logging in with `az acr login`.
-    - If you prefer manual pushes, run `docker push <registry>/orders-api:dev` and `docker push <registry>/orders-worker:dev` immediately after `make deploy` completes.
-4. Generate load
+    This runs `docker push` for both tags using the same `IMAGE_REGISTRY`. If you prefer manual commands, run `docker push <registry>/orders-api:dev` and `docker push <registry>/orders-worker:dev` right after `make deploy` completes.
+
+6. Generate load
 ```
 hey -z 30s -q 10 https://<api-endpoint>/orders
 ```

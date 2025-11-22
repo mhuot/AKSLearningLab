@@ -2,6 +2,13 @@
 
 This folder contains the end-to-end AKS Orders Demo referenced in the [root README](../README.md). It hosts docs, infrastructure-as-code, services, Helm charts, and GitHub Actions workflows so streams can focus on iterating instead of bootstrapping.
 
+## Purpose
+Use this README as the day-to-day guide when you are working inside `orders-demo/`: it explains how the workspace is organized, which Make targets exist, how to run the services locally, and what each livestream session is building. Start here once you already know the big-picture story from the root README.
+
+## Documentation Boundaries
+- Use the [root README](../README.md) for platform-wide context: architecture, prerequisites, and the end-to-end “Running the Demo” walkthrough.
+- Use this file for workspace-level details—folder explanations, Make targets, local dev tips, session-by-session agendas, and implementation breadcrumbs that help contributors work inside `orders-demo/`.
+
 ## Repository Layout
 - `docs/`: Product requirements and design notes for `orders-api` and `orders-worker`.
 - `infra/`: Bicep entry point plus modules for AKS, Strimzi Kafka, Event Hubs, ACR, storage, identities, and future Azure Monitor resources.
