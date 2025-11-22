@@ -1,4 +1,5 @@
 PYTHON ?= python3
+DOCKER_DEFAULT_PLATFORM ?= linux/amd64
 API_DIR := services/orders-api
 WORKER_DIR := services/orders-worker
 CHARTS_DIR := charts
