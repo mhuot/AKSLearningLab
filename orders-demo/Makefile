@@ -8,6 +8,13 @@ INFRA_MAIN := infra/main.bicep
 INFRA_PARAMETERS ?= infra/parameters.dev.json
 DEPLOYMENT_NAME ?= orders-demo
 DEPLOYMENT_LOCATION ?= eastus
+AZ_SUBSCRIPTION ?=
+AZ_SUBSCRIPTION_FLAG :=
+ifneq ($(strip $(AZ_SUBSCRIPTION)),)
+AZ_SUBSCRIPTION_FLAG := --subscription $(AZ_SUBSCRIPTION)
+endif
+SSH_PUBLIC_KEY_PATH ?= $(HOME)/.ssh/id_rsa.pub
+SSH_PUBLIC_KEY := $(shell test -f "$(SSH_PUBLIC_KEY_PATH)" && cat "$(SSH_PUBLIC_KEY_PATH)" || echo "")
 GENERATED_DIR := deploy/generated
 INFRA_OUTPUTS := $(GENERATED_DIR)/infra-outputs.json
 HELM_API_VALUES_FILE ?= $(GENERATED_DIR)/orders-api.values.generated.yaml
@@ -53,12 +60,25 @@ docker-worker:
 $(GENERATED_DIR):
 	mkdir -p $@
 
+
+define CHECK_SSH_KEY
+if [ -z "$(SSH_PUBLIC_KEY)" ]; then \
+  echo "SSH public key not found at $(SSH_PUBLIC_KEY_PATH). Set SSH_PUBLIC_KEY_PATH or create a key."; \
+  exit 1; \
+fi
+endef
+
 $(INFRA_OUTPUTS): $(INFRA_MAIN) $(INFRA_PARAMETERS) | $(GENERATED_DIR)
+	@$(CHECK_SSH_KEY)
 	az deployment sub create \
+		$(AZ_SUBSCRIPTION_FLAG) \
 		--name $(DEPLOYMENT_NAME) \
 		--location $(DEPLOYMENT_LOCATION) \
 		--template-file $(INFRA_MAIN) \
-		--parameters @$(INFRA_PARAMETERS) \
+		--parameters @$(INFRA_PARAMETERS) sshRSAPublicKey="$(SSH_PUBLIC_KEY)"
+	az deployment sub show \
+		$(AZ_SUBSCRIPTION_FLAG) \
+		--name $(DEPLOYMENT_NAME) \
 		--query properties.outputs \
 		--output json > $@
 

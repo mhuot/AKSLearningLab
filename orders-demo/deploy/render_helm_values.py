@@ -8,7 +8,10 @@ from typing import Any, Dict
 
 
 def load_outputs(path: Path) -> Dict[str, Any]:
-    data = json.loads(path.read_text())
+    text = path.read_text().strip()
+    if not text:
+        raise SystemExit(f"No data found in {path}. Re-run 'make infra-deploy' to refresh outputs.")
+    data = json.loads(text)
     return {k: (v.get("value") if isinstance(v, dict) else v) for k, v in data.items()}
 
 

@@ -260,6 +260,12 @@ az deployment sub create \
    --parameters @infra/parameters.dev.json
 ```
     _Shortcut_: Run `make infra-deploy` from `orders-demo/` to execute the same deployment and capture its outputs under `deploy/generated/infra-outputs.json`.
+    - `make infra-deploy` now looks for an SSH public key at `~/.ssh/id_rsa.pub`. Override this path with `SSH_PUBLIC_KEY_PATH=~/.ssh/orders-demo.pub make infra-deploy` or create a key with `ssh-keygen -t rsa -b 4096 -f ~/.ssh/orders-demo`.
+    - One-time setup: ensure your subscription is registered for the monitoring providers AKS relies on:
+      ```
+      az provider register --namespace Microsoft.OperationsManagement --wait
+      az provider register --namespace Microsoft.OperationalInsights --wait
+      ```
 2. Get AKS credentials
 ```
 az aks get-credentials \
