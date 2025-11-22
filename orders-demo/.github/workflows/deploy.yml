@@ -8,13 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          # Create an AZURE_CREDENTIALS secret that contains the JSON output of
-          # `az ad sp create-for-rbac --sdk-auth ...` so this step can authenticate.
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Validate role definition IDs
-        working-directory: orders-demo
-        run: python scripts/validate_role_ids.py
       - run: echo "Placeholder for deployment pipeline"

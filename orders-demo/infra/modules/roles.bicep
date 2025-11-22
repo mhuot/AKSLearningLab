@@ -28,7 +28,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing 
 	name: storageAccountName
 }
 
-// Role definition IDs
+// Role definition IDs (verify occasionally with `az role definition list --name "<role>" --query "[0].name" -o tsv`)
 var acrPullRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 var eventHubSendRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '2b629674-e913-4c01-ae53-ef4638d8f975')
 var eventHubListenRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a638d3c7-ab3a-418d-83e6-5f17a39d4fde')

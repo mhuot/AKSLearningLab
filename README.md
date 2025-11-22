@@ -267,6 +267,11 @@ az deployment sub create \
       az provider register --namespace Microsoft.OperationsManagement --wait
       az provider register --namespace Microsoft.OperationalInsights --wait
       ```
+        - Role assignments rely on Azure built-in roles. If you ever see `RoleDefinitionDoesNotExist`, rerun:
+            ```bash
+            az role definition list --name "Azure Event Hubs Data Sender" --query "[0].name" -o tsv
+            ```
+            Compare the GUID output with the value in `orders-demo/infra/modules/roles.bicep` (repeat for the other role names listed there). Update the file if Microsoft publishes new IDs before deploying again.
 2. Get AKS credentials
 ```
 az aks get-credentials \
