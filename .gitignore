@@ -1,0 +1,2 @@
+# Ignore generated deployment artifacts that contain environment-specific secrets
+orders-demo/deploy/generated/

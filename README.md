@@ -186,7 +186,7 @@ _Shortcut_: Run `make infra-deploy` from `orders-demo/` to execute the same depl
 
 _SSH key_: `make infra-deploy` looks for a public key at `~/.ssh/id_rsa.pub`. Override this path with `SSH_PUBLIC_KEY_PATH=~/.ssh/orders-demo.pub make infra-deploy` or create a key with `ssh-keygen -t rsa -b 4096 -f ~/.ssh/orders-demo`.
 
-_One-time provider registration:_
+_One-time provider registration (required before your first infra deploy in a subscription; skip if you’ve already run it in this tenant):_
 
 ```bash
 az provider register --namespace Microsoft.OperationsManagement --wait
@@ -200,34 +200,41 @@ az role definition list --name "Azure Event Hubs Data Sender" --query "[0].name"
 ```
 
 Compare the GUID output with the value in `orders-demo/infra/modules/roles.bicep` (repeat for the other role names listed there). Update the file if Microsoft publishes new IDs before deploying again.
+
 2. Get AKS credentials
 ```
 az aks get-credentials \
   -g <resource-group> \
   -n <aks-name>
 ```
-        Run this right after the infrastructure deploy (add `--overwrite-existing` if needed). If `helm` ever says `kubernetes cluster unreachable` or tries to talk to `localhost:8080`, it means this step was skipped or pointed at the wrong cluster.
+
+Run this right after the infrastructure deploy (add `--overwrite-existing` if needed). If `helm` ever says `kubernetes cluster unreachable` or tries to talk to `localhost:8080`, it means this step was skipped or pointed at the wrong cluster.
+
 3. Convert the captured outputs into Helm overrides
 ```
 make helm-values
 ```
-    This creates `deploy/generated/orders-api.values.generated.yaml` and `deploy/generated/orders-worker.values.generated.yaml`, pre-populated with the actual Event Hub namespace, storage account, and Application Insights connection string from Azure.
+
+This creates `deploy/generated/orders-api.values.generated.yaml` and `deploy/generated/orders-worker.values.generated.yaml`, pre-populated with the actual Event Hub namespace, storage account, and Application Insights connection string from Azure.
+
 4. Deploy the services with Helm (the `make deploy` target chains docker builds → `helm-values` → Helm releases)
 ```
 make deploy
 ```
-    > Common gotchas:
-    > - Install Helm locally (`brew install helm`) before running any Make targets that render charts.
-    > - Re-run `az aks get-credentials` if you rotated clusters or kubeconfig entries; Helm needs an active context that points at the AKS control plane.
-    > - After `make infra-deploy` succeeds, the Makefile reads the emitted `acrLoginServer` and automatically tags images as `<your-acr>.azurecr.io/...`. For alternate registries, override with `IMAGE_REGISTRY=<registry> make deploy`.
-    > - The Helm upgrade now receives `--set image.repository=<registry>/orders-{api,worker}` and `--set image.tag=dev` automatically, so you do not need to edit the charts to change image names.
-    > - Docker builds default to `linux/amd64` (via `DOCKER_DEFAULT_PLATFORM`) so images run on AKS nodes. Override with `DOCKER_DEFAULT_PLATFORM=linux/arm64 make deploy` only if your cluster is arm64.
 
-5. Push the images to ACR so AKS can pull them (after logging in with `az acr login`)
+Common gotchas:
+- Install Helm locally (`brew install helm`) before running any Make targets that render charts.
+- Re-run `az aks get-credentials` if you rotated clusters or kubeconfig entries; Helm needs an active context that points at the AKS control plane.
+- After `make infra-deploy` succeeds, the Makefile reads the emitted `acrLoginServer` and automatically tags images as `<your-acr>.azurecr.io/...`. For alternate registries, override with `IMAGE_REGISTRY=<registry> make deploy`.
+- The Helm upgrade now receives `--set image.repository=<registry>/orders-{api,worker}` and `--set image.tag=dev` automatically, so you do not need to edit the charts to change image names.
+- Docker builds default to `linux/amd64` (via `DOCKER_DEFAULT_PLATFORM`) so images run on AKS nodes. Override with `DOCKER_DEFAULT_PLATFORM=linux/arm64 make deploy` only if your cluster is arm64.
+
+5. Push the images to ACR so AKS can pull them (you must authenticate first)
 ```
+az acr login -n ordersacrdev   # replace with your ACR name
 make push
 ```
-    This runs `docker push` for both tags using the same `IMAGE_REGISTRY`. If you prefer manual commands, run `docker push <registry>/orders-api:dev` and `docker push <registry>/orders-worker:dev` right after `make deploy` completes.
+`make push` simply runs `docker push` for both tags using the same `IMAGE_REGISTRY`. If you prefer manual commands, run `docker push <registry>/orders-api:dev` and `docker push <registry>/orders-worker:dev` right after `make deploy` completes. If Docker ever returns `unauthorized`, re-run `az acr login -n <your-acr>` in the same shell and rerun the pushes.
 
 6. Generate load
 ```
